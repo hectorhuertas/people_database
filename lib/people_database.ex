@@ -1,6 +1,6 @@
 defmodule PeopleDatabase do
   def start(people \\ []) do
-    IO.puts("Welcome to the awesome Bob's database")
+    IO.puts("Program started")
     IO.puts(people)
     initialize_database(people)
   end
@@ -9,15 +9,20 @@ defmodule PeopleDatabase do
 
   end
 
-  def initialize_database(people) do
-    IO.puts('Yeah')
-    Agent.start_link(fn -> people end, name: :cosa)
-    msg = Agent.get(:cosa, fn list -> list end)
+  def initialize_database(people) when is_list(people) do
+    IO.puts("Database initialized")
+    Agent.start_link(fn -> people end, name: :database)
+    msg = Agent.get(:database, fn list -> list end)
     IO.puts(msg)
   end
 
   def get_data do
-    msg = Agent.get(:cosa, fn list -> list end)
-    IO.puts(msg)    
+    list = Agent.get(:database, fn list -> list end)
+    IO.puts(list)
+    list
+  end
+
+  def add(person) do
+    Agent.update(:database, fn list -> [person|list] end)
   end
 end
