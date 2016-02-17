@@ -40,10 +40,15 @@ defmodule PeopleDatabase do
       |> Enum.filter(fn person -> person.state === state end)
   end
 
-  # def where(options) do
-  #   all
-  #   |> Enum.filter(fn person -> %Person{options} === person end)
-  # end
+  def where(options) do # Needs a map as argument
+    all
+    |> Enum.filter(fn person -> check(person, options) end)
+  end
+
+  def check(person, options) do
+    keys = Map.keys(options)
+     |> Enum.all?(fn key -> Map.fetch(person,key) === Map.fetch(options,key) end)
+  end
 
   def count_from(state) do
     from(state)
