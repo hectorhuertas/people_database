@@ -1,6 +1,9 @@
 # PeopleDatabase
 
-**TODO: Add description**
+add people by
+```
+PeopleDatabase.add(first_name: "Tess", last_name: "Griffin", email: "tess@turing.io", state: "CO")
+```
 
 ## Installation
 
@@ -17,4 +20,3 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
         def application do
           [applications: [:people_database]]
         end
-

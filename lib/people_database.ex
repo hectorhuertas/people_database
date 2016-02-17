@@ -1,44 +1,58 @@
 defmodule PeopleDatabase do
   def start(people \\ []) do
-    IO.puts("Program started")
+    # people = [%Person{email: "bob", state: "NY"},%Person{email: "hector"},%Person{email: "peter"}]
     initialize_database
     load(people)
   end
 
+  def initialize_database do
+    Agent.start_link(fn -> [] end, name: :database)
+  end
+
   def load(people) do
-    Enum.each(people, fn person -> PeopleDatabase.add(person) end)
+    Enum.each(people, fn person -> add(person) end)
   end
 
   def add(%Person{} = person) do
     Agent.update(:database, fn list -> [person|list] end)
   end
 
-  def initialize_database do
-    Agent.start_link(fn -> [] end, name: :database)
-    IO.puts("Database initialized")
+  def add(person) do
+    add(struct(Person, person))
   end
 
-  def get_data do
-    list = Agent.get(:database, fn list -> list end)
-    # IO.puts(List.to_string(list))
-    list
+  def delete_by_email(email) do
+    all
+    |> Enum.find(fn  person -> person.email === email end)
+    |> remove
   end
-  # def initialize_database(people) when is_list(people) do
-  #   Agent.start_link(fn -> people end, name: :database)
-  #   IO.puts("Database initialized")
-  #   # msg = Agent.get(:database, fn list -> list end)
-  #   # IO.puts(msg)
+
+  def remove(person) do
+    Agent.update(:database, fn  list -> List.delete(list, person) end)
+  end
+
+  def all do
+    Agent.get(:database, fn list -> list end)
+  end
+
+  def from(state) do
+    all
+      |> Enum.filter(fn person -> person.state === state end)
+  end
+
+  # def where(options) do
+  #   all
+  #   |> Enum.filter(fn person -> %Person{options} === person end)
   # end
 
-  # def initialize_database(people) do
-  #   IO.puts("Param must be a list")
-  # end
+  def count_from(state) do
+    from(state)
+      |> Enum.count
+  end
 
-  # def add(%Person{} = person) do
-  #   Agent.update(:database, fn list -> [person|list] end)
-  # end
-  # def add(person) do
-  #   IO.puts("Didn't match")
-  #   Agent.update(:database, fn list -> [person|list] end)
-  # end
+  def emails do
+    all
+    |> Enum.map(fn person -> person.email end)
+    |> Enum.join(", ")
+  end
 end
